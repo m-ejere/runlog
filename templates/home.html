@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RunLog</title>
+</head>
+<body>
+
+    <h1>RunLog</h1>
+
+    {% if user.is_authenticated %}
+        <h2>Welcome, {{ user.username }}!</h2>
+
+        <p>You are logged in.</p>
+
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+
+        <p>Your running dashboard will be here.</p>
+    {% else %}
+        <h2>Track your runs simply.</h2>
+
+        <p>
+            Keep a record of your running activity in one place.
+        </p>
+
+        <p>
+            <a href="{% url 'login' %}">Login</a>
+            |
+            <a href="{% url 'register' %}">Register</a>
+        </p>
+    {% endif %}
+
+</body>
+</html>
