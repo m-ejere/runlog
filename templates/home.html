@@ -6,6 +6,31 @@
 
     <h2>Welcome, {{ user.username }}!</h2>
 
+    <section class="stats-section">
+        <h2>Your Statistics</h2>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-number">{{ total_runs }}</span>
+                <span class="stat-label">Total Runs</span>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-number">
+                    {{ total_distance|floatformat:2 }} km
+                </span>
+                <span class="stat-label">Total Distance</span>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-number">
+                    {{ average_distance|floatformat:2 }} km
+                </span>
+                <span class="stat-label">Average Run</span>
+            </div>
+        </div>
+    </section>
+
     <section>
         <h2>Add a Run</h2>
 

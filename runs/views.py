@@ -71,12 +71,23 @@ def home(request):
         user=request.user
     ).order_by('-date')
 
+    total_runs = runs.count()
+    total_distance = sum(run.distance for run in runs)
+
+    if total_runs:
+        average_distance = total_distance / total_runs
+    else:
+        average_distance = 0
+
     return render(
         request,
         'home.html',
         {
             'form': form,
             'runs': runs,
+            'total_runs': total_runs,
+            'total_distance': total_distance,
+            'average_distance': average_distance,
         }
     )
 
