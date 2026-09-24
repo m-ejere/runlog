@@ -35,6 +35,10 @@
                     {% if run.notes %}
                         - {{ run.notes }}
                     {% endif %}
+
+                    <a href="{% url 'edit_run' run.id %}">
+                        Edit
+                    </a>
                 </li>
             {% endfor %}
         </ul>

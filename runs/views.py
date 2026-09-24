@@ -44,3 +44,26 @@ def home(request):
             'runs': runs,
         }
     )
+
+
+@login_required
+def edit_run(request, run_id):
+    run = Run.objects.get(id=run_id, user=request.user)
+
+    if request.method == 'POST':
+        form = RunForm(request.POST, instance=run)
+
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = RunForm(instance=run)
+
+    return render(
+        request,
+        'edit_run.html',
+        {
+            'form': form,
+            'run': run,
+        }
+    )

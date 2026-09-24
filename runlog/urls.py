@@ -29,6 +29,12 @@ urlpatterns = [
     ),
 
     path(
+        'edit/<int:run_id>/',
+        views.edit_run,
+        name='edit_run',
+    ),
+
+    path(
         '',
         views.home,
         name='home',
