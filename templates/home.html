@@ -39,6 +39,10 @@
                     <a href="{% url 'edit_run' run.id %}">
                         Edit
                     </a>
+
+                    <a href="{% url 'delete_run' run.id %}">
+                        Delete
+                    </a>
                 </li>
             {% endfor %}
         </ul>

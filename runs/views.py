@@ -67,3 +67,20 @@ def edit_run(request, run_id):
             'run': run,
         }
     )
+
+
+@login_required
+def delete_run(request, run_id):
+    run = Run.objects.get(id=run_id, user=request.user)
+
+    if request.method == 'POST':
+        run.delete()
+        return redirect('home')
+
+    return render(
+        request,
+        'delete_run.html',
+        {
+            'run': run,
+        }
+    )

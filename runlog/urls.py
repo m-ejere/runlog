@@ -35,6 +35,12 @@ urlpatterns = [
     ),
 
     path(
+        'delete/<int:run_id>/',
+        views.delete_run,
+        name='delete_run',
+    ),
+
+    path(
         '',
         views.home,
         name='home',
