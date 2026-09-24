@@ -1,10 +1,27 @@
+from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.views import LoginView, LogoutView
 from django.shortcuts import render, redirect
 
 from .forms import RunForm
 from .models import Run
+
+
+class CustomLoginView(LoginView):
+    template_name = 'registration/login.html'
+
+    def form_valid(self, form):
+        messages.success(self.request, 'You have logged in successfully.')
+        return super().form_valid(form)
+
+
+class CustomLogoutView(LogoutView):
+
+    def dispatch(self, request, *args, **kwargs):
+        messages.success(request, 'You have logged out successfully.')
+        return super().dispatch(request, *args, **kwargs)
 
 
 def register(request):
@@ -30,6 +47,7 @@ def home(request):
             run = form.save(commit=False)
             run.user = request.user
             run.save()
+            messages.success(request, 'Run added successfully.')
             return redirect('home')
     else:
         form = RunForm()
@@ -55,6 +73,7 @@ def edit_run(request, run_id):
 
         if form.is_valid():
             form.save()
+            messages.success(request, 'Run updated successfully.')
             return redirect('home')
     else:
         form = RunForm(instance=run)
@@ -75,6 +94,7 @@ def delete_run(request, run_id):
 
     if request.method == 'POST':
         run.delete()
+        messages.success(request, 'Run deleted successfully.')
         return redirect('home')
 
     return render(
