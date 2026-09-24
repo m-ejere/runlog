@@ -1,24 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | RunLog</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-    <h1>RunLog</h1>
+{% block title %}Login | RunLog{% endblock %}
 
-    {% if messages %}
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
-    {% endif %}
+{% block content %}
 
     <h2>Login</h2>
 
     <form method="post">
         {% csrf_token %}
+
         {{ form.as_p }}
 
         <button type="submit">Login</button>
@@ -29,5 +19,4 @@
         <a href="{% url 'register' %}">Register</a>
     </p>
 
-</body>
-</html>
+{% endblock %}

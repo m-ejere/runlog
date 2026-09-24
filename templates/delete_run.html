@@ -1,13 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delete Run | RunLog</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-    <h1>RunLog</h1>
+{% block title %}Delete Run | RunLog{% endblock %}
+
+{% block content %}
 
     <h2>Delete Run</h2>
 
@@ -24,6 +19,7 @@
 
     <form method="post">
         {% csrf_token %}
+
         <button type="submit">Yes, Delete Run</button>
     </form>
 
@@ -31,5 +27,4 @@
         <a href="{% url 'home' %}">Cancel</a>
     </p>
 
-</body>
-</html>
+{% endblock %}

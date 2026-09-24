@@ -13,14 +13,20 @@ class CustomLoginView(LoginView):
     template_name = 'registration/login.html'
 
     def form_valid(self, form):
-        messages.success(self.request, 'You have logged in successfully.')
+        messages.success(
+            self.request,
+            'You have logged in successfully.'
+        )
         return super().form_valid(form)
 
 
 class CustomLogoutView(LogoutView):
 
     def dispatch(self, request, *args, **kwargs):
-        messages.success(request, 'You have logged out successfully.')
+        messages.success(
+            request,
+            'You have logged out successfully.'
+        )
         return super().dispatch(request, *args, **kwargs)
 
 
@@ -35,7 +41,11 @@ def register(request):
     else:
         form = UserCreationForm()
 
-    return render(request, 'registration/register.html', {'form': form})
+    return render(
+        request,
+        'registration/register.html',
+        {'form': form}
+    )
 
 
 @login_required
@@ -46,13 +56,20 @@ def home(request):
         if form.is_valid():
             run = form.save(commit=False)
             run.user = request.user
+            run.full_clean()
             run.save()
-            messages.success(request, 'Run added successfully.')
+
+            messages.success(
+                request,
+                'Run added successfully.'
+            )
             return redirect('home')
     else:
         form = RunForm()
 
-    runs = Run.objects.filter(user=request.user).order_by('-date')
+    runs = Run.objects.filter(
+        user=request.user
+    ).order_by('-date')
 
     return render(
         request,
@@ -66,14 +83,26 @@ def home(request):
 
 @login_required
 def edit_run(request, run_id):
-    run = Run.objects.get(id=run_id, user=request.user)
+    run = Run.objects.get(
+        id=run_id,
+        user=request.user
+    )
 
     if request.method == 'POST':
-        form = RunForm(request.POST, instance=run)
+        form = RunForm(
+            request.POST,
+            instance=run
+        )
 
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Run updated successfully.')
+            run = form.save(commit=False)
+            run.full_clean()
+            run.save()
+
+            messages.success(
+                request,
+                'Run updated successfully.'
+            )
             return redirect('home')
     else:
         form = RunForm(instance=run)
@@ -90,11 +119,18 @@ def edit_run(request, run_id):
 
 @login_required
 def delete_run(request, run_id):
-    run = Run.objects.get(id=run_id, user=request.user)
+    run = Run.objects.get(
+        id=run_id,
+        user=request.user
+    )
 
     if request.method == 'POST':
         run.delete()
-        messages.success(request, 'Run deleted successfully.')
+
+        messages.success(
+            request,
+            'Run deleted successfully.'
+        )
         return redirect('home')
 
     return render(
