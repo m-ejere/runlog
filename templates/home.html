@@ -9,30 +9,43 @@
 
     <h1>RunLog</h1>
 
-    {% if user.is_authenticated %}
-        <h2>Welcome, {{ user.username }}!</h2>
+    <h2>Welcome, {{ user.username }}!</h2>
 
-        <p>You are logged in.</p>
+    <h2>Add a run</h2>
 
-        <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit">Logout</button>
-        </form>
+    <form method="post">
+        {% csrf_token %}
 
-        <p>Your running dashboard will be here.</p>
+        {{ form.as_p }}
+
+        <button type="submit">Add Run</button>
+    </form>
+
+    <h2>My runs</h2>
+
+    {% if runs %}
+        <ul>
+            {% for run in runs %}
+                <li>
+                    {{ run.date }} -
+                    {{ run.distance }} km -
+                    {{ run.duration }} -
+                    {{ run.get_run_type_display }}
+
+                    {% if run.notes %}
+                        - {{ run.notes }}
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
     {% else %}
-        <h2>Track your runs simply.</h2>
-
-        <p>
-            Keep a record of your running activity in one place.
-        </p>
-
-        <p>
-            <a href="{% url 'login' %}">Login</a>
-            |
-            <a href="{% url 'register' %}">Register</a>
-        </p>
+        <p>You haven't added any runs yet.</p>
     {% endif %}
+
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
 
 </body>
 </html>
