@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django import forms
 from django.utils import timezone
 
@@ -5,9 +7,54 @@ from .models import Run
 
 
 class RunForm(forms.ModelForm):
+    hours = forms.IntegerField(
+        min_value=0,
+        max_value=23,
+        initial=0,
+        widget=forms.NumberInput(
+            attrs={
+                'min': '0',
+                'max': '23',
+                'placeholder': 'Hours',
+            }
+        ),
+    )
+
+    minutes = forms.IntegerField(
+        min_value=0,
+        max_value=59,
+        initial=0,
+        widget=forms.NumberInput(
+            attrs={
+                'min': '0',
+                'max': '59',
+                'placeholder': 'Minutes',
+            }
+        ),
+    )
+
+    seconds = forms.IntegerField(
+        min_value=0,
+        max_value=59,
+        initial=0,
+        widget=forms.NumberInput(
+            attrs={
+                'min': '0',
+                'max': '59',
+                'placeholder': 'Seconds',
+            }
+        ),
+    )
+
     class Meta:
         model = Run
-        fields = ['date', 'distance', 'duration', 'run_type', 'notes']
+        fields = [
+            'date',
+            'distance',
+            'distance_unit',
+            'run_type',
+            'notes',
+        ]
         widgets = {
             'date': forms.DateInput(
                 attrs={
@@ -16,18 +63,28 @@ class RunForm(forms.ModelForm):
                     'min': '1900-01-01',
                 }
             ),
-            'duration': forms.TimeInput(
-                attrs={
-                    'type': 'time',
-                }
-            ),
             'distance': forms.NumberInput(
                 attrs={
                     'min': '0.01',
                     'step': '0.01',
+                    'placeholder': 'e.g. 5.00',
                 }
             ),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if self.instance and self.instance.pk:
+            total_seconds = int(
+                self.instance.duration.total_seconds()
+            )
+
+            self.fields['hours'].initial = total_seconds // 3600
+            self.fields['minutes'].initial = (
+                total_seconds % 3600
+            ) // 60
+            self.fields['seconds'].initial = total_seconds % 60
 
     def clean_date(self):
         date = self.cleaned_data['date']
@@ -56,12 +113,41 @@ class RunForm(forms.ModelForm):
 
         return distance
 
-    def clean_duration(self):
-        duration = self.cleaned_data['duration']
+    def clean(self):
+        cleaned_data = super().clean()
 
-        if duration.total_seconds() <= 0:
+        hours = cleaned_data.get('hours')
+        minutes = cleaned_data.get('minutes')
+        seconds = cleaned_data.get('seconds')
+
+        if hours is None or minutes is None or seconds is None:
+            return cleaned_data
+
+        total_seconds = (
+            hours * 3600
+            + minutes * 60
+            + seconds
+        )
+
+        if total_seconds <= 0:
             raise forms.ValidationError(
                 'Duration must be greater than 0.'
             )
 
-        return duration
+        duration = timedelta(seconds=total_seconds)
+
+        cleaned_data['duration'] = duration
+
+        self.instance.duration = duration
+
+        return cleaned_data
+
+    def save(self, commit=True):
+        run = super().save(commit=False)
+
+        run.duration = self.cleaned_data['duration']
+
+        if commit:
+            run.save()
+
+        return run

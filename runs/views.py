@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
@@ -72,12 +74,18 @@ def home(request):
     ).order_by('-date')
 
     total_runs = runs.count()
-    total_distance = sum(run.distance for run in runs)
+    total_distance = Decimal('0.00')
+
+    for run in runs:
+        if run.distance_unit == 'mi':
+            total_distance += run.distance * Decimal('1.60934')
+        else:
+            total_distance += run.distance
 
     if total_runs:
         average_distance = total_distance / total_runs
     else:
-        average_distance = 0
+        average_distance = Decimal('0.00')
 
     return render(
         request,

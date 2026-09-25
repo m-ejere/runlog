@@ -38,16 +38,45 @@
             {% csrf_token %}
 
             {% for field in form %}
-                <div class="form-field">
-                    {{ field.label_tag }}
+                {% if field.name != 'hours' and field.name != 'minutes' and field.name != 'seconds' %}
+                    <div class="form-field">
+                        {{ field.label_tag }}
 
-                    {{ field }}
+                        {{ field }}
 
-                    {% for error in field.errors %}
+                        {% for error in field.errors %}
+                            <p class="form-error">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <div class="form-field">
+                <label>Duration</label>
+
+                <div class="duration-fields">
+                    <div>
+                        {{ form.hours }}
+                        <span>hours</span>
+                    </div>
+
+                    <div>
+                        {{ form.minutes }}
+                        <span>minutes</span>
+                    </div>
+
+                    <div>
+                        {{ form.seconds }}
+                        <span>seconds</span>
+                    </div>
+                </div>
+
+                {% if form.non_field_errors %}
+                    {% for error in form.non_field_errors %}
                         <p class="form-error">{{ error }}</p>
                     {% endfor %}
-                </div>
-            {% endfor %}
+                {% endif %}
+            </div>
 
             <button type="submit">Add Run</button>
         </form>
@@ -62,7 +91,8 @@
                     <li>
                         <strong>{{ run.date }}</strong>
                         -
-                        {{ run.distance }} km
+                        {{ run.distance }}
+                        {{ run.get_distance_unit_display }}
                         -
                         {{ run.duration }}
                         -

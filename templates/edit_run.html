@@ -9,7 +9,46 @@
     <form method="post">
         {% csrf_token %}
 
-        {{ form.as_p }}
+        {% for field in form %}
+            {% if field.name != 'hours' and field.name != 'minutes' and field.name != 'seconds' %}
+                <div class="form-field">
+                    {{ field.label_tag }}
+
+                    {{ field }}
+
+                    {% for error in field.errors %}
+                        <p class="form-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <div class="form-field">
+            <label>Duration</label>
+
+            <div class="duration-fields">
+                <div>
+                    {{ form.hours }}
+                    <span>hours</span>
+                </div>
+
+                <div>
+                    {{ form.minutes }}
+                    <span>minutes</span>
+                </div>
+
+                <div>
+                    {{ form.seconds }}
+                    <span>seconds</span>
+                </div>
+            </div>
+
+            {% if form.non_field_errors %}
+                {% for error in form.non_field_errors %}
+                    <p class="form-error">{{ error }}</p>
+                {% endfor %}
+            {% endif %}
+        </div>
 
         <button type="submit">Save Changes</button>
     </form>
