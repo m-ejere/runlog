@@ -4,57 +4,92 @@
 
 {% block content %}
 
-    <h2>Edit Run</h2>
+    <section class="form-page">
 
-    <form method="post">
-        {% csrf_token %}
+        <div class="form-page-header">
+            <p class="eyebrow">UPDATE YOUR LOG</p>
 
-        {% for field in form %}
-            {% if field.name != 'hours' and field.name != 'minutes' and field.name != 'seconds' %}
-                <div class="form-field">
-                    {{ field.label_tag }}
+            <h1>Edit Run</h1>
 
-                    {{ field }}
-
-                    {% for error in field.errors %}
-                        <p class="form-error">{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endfor %}
-
-        <div class="form-field">
-            <label>Duration</label>
-
-            <div class="duration-fields">
-                <div>
-                    {{ form.hours }}
-                    <span>hours</span>
-                </div>
-
-                <div>
-                    {{ form.minutes }}
-                    <span>minutes</span>
-                </div>
-
-                <div>
-                    {{ form.seconds }}
-                    <span>seconds</span>
-                </div>
-            </div>
-
-            {% if form.non_field_errors %}
-                {% for error in form.non_field_errors %}
-                    <p class="form-error">{{ error }}</p>
-                {% endfor %}
-            {% endif %}
+            <p>
+                Correct or update the details of your run.
+            </p>
         </div>
 
-        <button type="submit">Save Changes</button>
-    </form>
+        <div class="form-card">
 
-    <p>
-        <a href="{% url 'home' %}">Back to My Runs</a>
-    </p>
+            <form method="post" class="run-form">
+                {% csrf_token %}
+
+                {% for field in form %}
+
+                    {% if field.name != 'hours' and field.name != 'minutes' and field.name != 'seconds' %}
+
+                        <div class="form-field">
+
+                            {{ field.label_tag }}
+
+                            {{ field }}
+
+                            {% for error in field.errors %}
+                                <p class="form-error">{{ error }}</p>
+                            {% endfor %}
+
+                        </div>
+
+                    {% endif %}
+
+                {% endfor %}
+
+                <div class="form-field">
+
+                    <label>Duration</label>
+
+                    <div class="duration-fields">
+
+                        <div>
+                            {{ form.hours }}
+                            <span>hours</span>
+                        </div>
+
+                        <div>
+                            {{ form.minutes }}
+                            <span>minutes</span>
+                        </div>
+
+                        <div>
+                            {{ form.seconds }}
+                            <span>seconds</span>
+                        </div>
+
+                    </div>
+
+                    {% if form.non_field_errors %}
+
+                        {% for error in form.non_field_errors %}
+                            <p class="form-error">{{ error }}</p>
+                        {% endfor %}
+
+                    {% endif %}
+
+                </div>
+
+                <div class="form-actions">
+
+                    <button type="submit">
+                        Save Changes
+                    </button>
+
+                    <a href="{% url 'home' %}" class="secondary-button">
+                        Cancel
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </section>
 
 {% endblock %}

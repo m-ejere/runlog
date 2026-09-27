@@ -4,35 +4,56 @@
 
 {% block content %}
 
-    <h2>Create an account</h2>
+<section class="auth-page">
+    <div class="auth-card">
 
-    <form method="post">
-        {% csrf_token %}
+        <div class="auth-header">
+            <p class="eyebrow">START YOUR JOURNEY</p>
+            <h1>Create your RunLog account</h1>
+            <p>Create an account to start recording your runs.</p>
+        </div>
 
-        {% for field in form %}
-            <div class="form-field">
-                {{ field.label_tag }}
+        <form method="post" class="auth-form" novalidate>
+            {% csrf_token %}
 
-                {{ field }}
+            {% if form.non_field_errors %}
+                <div class="auth-errors">
+                    {% for error in form.non_field_errors %}
+                        <p class="form-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
 
-                {% if field.help_text %}
-                    <div class="help-text">
-                        {{ field.help_text|safe }}
-                    </div>
-                {% endif %}
+            {% for field in form %}
+                <div class="form-field">
+                    {{ field.label_tag }}
+                    {{ field }}
 
-                {% for error in field.errors %}
-                    <p class="form-error">{{ error }}</p>
-                {% endfor %}
-            </div>
-        {% endfor %}
+                    {% if field.help_text %}
+                        <div class="help-text">
+                            {{ field.help_text|safe }}
+                        </div>
+                    {% endif %}
 
-        <button type="submit">Register</button>
-    </form>
+                    {% for error in field.errors %}
+                        <p class="form-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
 
-    <p>
-        Already have an account?
-        <a href="{% url 'login' %}">Login</a>
-    </p>
+            <button type="submit">
+                Create Account
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p>
+                Already have an account?
+                <a href="{% url 'login' %}">Login</a>
+            </p>
+        </div>
+
+    </div>
+</section>
 
 {% endblock %}

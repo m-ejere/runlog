@@ -1,120 +1,184 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}My Runs | RunLog{% endblock %}
 
 {% block content %}
 
-    <h2>Welcome, {{ user.username }}!</h2>
+<section class="hero-section">
+    <div class="hero-content">
+        <p class="eyebrow">YOUR RUNNING LOG</p>
 
-    <section class="stats-section">
-        <h2>Your Statistics</h2>
+        <h1>
+            Keep moving,
+            <span>{{ user.username }}</span>.
+        </h1>
 
-        <div class="stats-grid">
-            <div class="stat-card">
-                <span class="stat-number">{{ total_runs }}</span>
-                <span class="stat-label">Total Runs</span>
-            </div>
+        <p class="intro-text">
+            Record your runs, follow your progress, and keep building
+            your running history.
+        </p>
 
-            <div class="stat-card">
-                <span class="stat-number">
-                    {{ total_distance|floatformat:2 }} km
-                </span>
-                <span class="stat-label">Total Distance</span>
-            </div>
+        <a href="#add-run" class="hero-button">
+            Log a Run
+        </a>
+    </div>
 
-            <div class="stat-card">
-                <span class="stat-number">
-                    {{ average_distance|floatformat:2 }} km
-                </span>
-                <span class="stat-label">Average Run</span>
-            </div>
+    <div class="hero-image">
+        <img src="{% static 'images/runner.png' %}" alt="Runner in motion">
+    </div>
+</section>
+
+<section class="stats-section">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">YOUR PROGRESS</p>
+            <h2>Running Statistics</h2>
         </div>
-    </section>
+    </div>
 
-    <section>
-        <h2>Add a Run</h2>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-number">{{ total_runs|default:0 }}</span>
+            <span class="stat-label">Total Runs</span>
+        </div>
 
-        <form method="post">
-            {% csrf_token %}
+        <div class="stat-card">
+            <span class="stat-number">
+                {{ total_distance|default:0|floatformat:2 }}
+            </span>
+            <span class="stat-label">Total Distance (km)</span>
+        </div>
 
-            {% for field in form %}
-                {% if field.name != 'hours' and field.name != 'minutes' and field.name != 'seconds' %}
-                    <div class="form-field">
-                        {{ field.label_tag }}
+        <div class="stat-card">
+            <span class="stat-number">
+                {{ average_distance|default:0|floatformat:2 }}
+            </span>
+            <span class="stat-label">Average Run (km)</span>
+        </div>
+    </div>
+</section>
 
-                        {{ field }}
+<section class="run-form-section" id="add-run">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">LOG YOUR MILES</p>
+            <h2>Add a Run</h2>
+        </div>
+    </div>
 
-                        {% for error in field.errors %}
-                            <p class="form-error">{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            {% endfor %}
+    <form method="post" class="run-form" novalidate>
+        {% csrf_token %}
 
-            <div class="form-field">
-                <label>Duration</label>
+        {% if form.non_field_errors %}
+            <div class="auth-errors">
+                {% for error in form.non_field_errors %}
+                    <p class="form-error">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
 
-                <div class="duration-fields">
-                    <div>
-                        {{ form.hours }}
-                        <span>hours</span>
-                    </div>
+        {% for field in form %}
+            {% if field.name != 'hours' and field.name != 'minutes' and field.name != 'seconds' %}
+                <div class="form-field">
+                    {{ field.label_tag }}
+                    {{ field }}
 
-                    <div>
-                        {{ form.minutes }}
-                        <span>minutes</span>
-                    </div>
+                    {% if field.help_text %}
+                        <div class="help-text">{{ field.help_text }}</div>
+                    {% endif %}
 
-                    <div>
-                        {{ form.seconds }}
-                        <span>seconds</span>
-                    </div>
-                </div>
-
-                {% if form.non_field_errors %}
-                    {% for error in form.non_field_errors %}
+                    {% for error in field.errors %}
                         <p class="form-error">{{ error }}</p>
                     {% endfor %}
-                {% endif %}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <div class="form-field">
+            <label>Duration</label>
+
+            <div class="duration-fields">
+                <div>
+                    {{ form.hours }}
+                    <span>hours</span>
+                </div>
+
+                <div>
+                    {{ form.minutes }}
+                    <span>minutes</span>
+                </div>
+
+                <div>
+                    {{ form.seconds }}
+                    <span>seconds</span>
+                </div>
             </div>
 
-            <button type="submit">Add Run</button>
-        </form>
-    </section>
+            {% for error in form.hours.errors %}
+                <p class="form-error">{{ error }}</p>
+            {% endfor %}
+            {% for error in form.minutes.errors %}
+                <p class="form-error">{{ error }}</p>
+            {% endfor %}
+            {% for error in form.seconds.errors %}
+                <p class="form-error">{{ error }}</p>
+            {% endfor %}
+        </div>
 
-    <section>
-        <h2>Your Running History</h2>
+        <button type="submit">
+            Add Run
+        </button>
+    </form>
+</section>
 
-        {% if runs %}
-            <ul>
-                {% for run in runs %}
-                    <li>
-                        <strong>{{ run.date }}</strong>
-                        -
-                        {{ run.distance }}
-                        {{ run.get_distance_unit_display }}
-                        -
-                        {{ run.duration }}
-                        -
-                        {{ run.get_run_type_display }}
+<section class="history-section">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">YOUR JOURNEY</p>
+            <h2>Running History</h2>
+        </div>
+    </div>
+
+    {% if runs %}
+        <div class="run-list">
+            {% for run in runs %}
+                <article class="run-card">
+                    <div class="run-date">
+                        <span>{{ run.date|date:"d" }}</span>
+                        <small>{{ run.date|date:"M Y" }}</small>
+                    </div>
+
+                    <div class="run-details">
+                        <strong>
+                            {{ run.distance }}
+                            {{ run.get_distance_unit_display }}
+                        </strong>
+
+                        <span>
+                            {{ run.duration }}
+                            &middot;
+                            {{ run.get_run_type_display }}
+                        </span>
 
                         {% if run.notes %}
-                            - {{ run.notes }}
+                            <p>{{ run.notes }}</p>
                         {% endif %}
+                    </div>
 
-                        <a href="{% url 'edit_run' run.id %}">
-                            Edit
-                        </a>
-
-                        <a href="{% url 'delete_run' run.id %}">
-                            Delete
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>You haven't added any runs yet.</p>
-        {% endif %}
-    </section>
+                    <div class="run-actions">
+                        <a href="{% url 'edit_run' run.id %}">Edit</a>
+                        <a href="{% url 'delete_run' run.id %}">Delete</a>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h3>Your running journey starts here.</h3>
+            <p>Add your first run above and start building your history.</p>
+        </div>
+    {% endif %}
+</section>
 
 {% endblock %}

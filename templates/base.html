@@ -5,35 +5,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
     <title>{% block title %}RunLog{% endblock %}</title>
 </head>
+
 <body>
 
-    <header>
-        <h1>RunLog</h1>
+    <header class="site-header">
+        <div class="header-content">
 
-        {% if user.is_authenticated %}
-            <nav>
-                <a href="{% url 'home' %}">My Runs</a>
-                <form method="post" action="{% url 'logout' %}">
-                    {% csrf_token %}
-                    <button type="submit">Logout</button>
-                </form>
-            </nav>
-        {% endif %}
+            <a href="{% url 'home' %}" class="logo">
+                RunLog
+            </a>
+
+            {% if user.is_authenticated %}
+                <nav>
+                    <a href="{% url 'home' %}">My Runs</a>
+
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="logout-button">
+                            Logout
+                        </button>
+                    </form>
+                </nav>
+            {% endif %}
+
+        </div>
     </header>
 
-    <main>
+    <main class="main-content">
+
         {% if messages %}
-            {% for message in messages %}
-                <p>{{ message }}</p>
-            {% endfor %}
+            <div class="messages">
+                {% for message in messages %}
+                    <p class="message">{{ message }}</p>
+                {% endfor %}
+            </div>
         {% endif %}
 
         {% block content %}
         {% endblock %}
+
     </main>
+
+    <footer>
+        <p>RunLog; Keep track of your running.</p>
+    </footer>
 
 </body>
 </html>

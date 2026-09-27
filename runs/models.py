@@ -1,3 +1,4 @@
+from datetime import timedelta
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import User
@@ -31,29 +32,35 @@ class Run(models.Model):
     notes = models.TextField(blank=True)
 
     def clean(self):
-        minimum_date = timezone.datetime(1900, 1, 1).date()
+        super().clean()
+        
+        # Only validate date if self.date is not None
+        if self.date is not None:
+            minimum_date = timezone.datetime(1900, 1, 1).date()
 
-        if self.date < minimum_date:
-            raise ValidationError(
-                {'date': 'Please enter a valid run date.'}
-            )
+            if self.date < minimum_date:
+                raise ValidationError(
+                    {'date': 'Please enter a valid run date.'}
+                )
 
-        if self.date > timezone.localdate():
-            raise ValidationError(
-                {'date': 'You cannot add a run in the future.'}
-            )
+            if self.date > timezone.localdate():
+                raise ValidationError(
+                    {'date': 'You cannot add a run in the future.'}
+                )
 
-        if self.distance <= 0:
+        # Only validate distance if self.distance is not None
+        if self.distance is not None and self.distance <= 0:
             raise ValidationError(
                 {'distance': 'Distance must be greater than 0.'}
             )
 
+        # Only validate duration if self.duration is not None
         if (
             self.duration is not None
             and self.duration.total_seconds() <= 0
         ):
             raise ValidationError(
-                {'duration': 'Duration must be greater than 0.'}
+                'Duration must be greater than 0.'
             )
 
     def __str__(self):

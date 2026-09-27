@@ -3,20 +3,49 @@
 {% block title %}Login | RunLog{% endblock %}
 
 {% block content %}
+<section class="auth-page">
+    <div class="auth-card">
 
-    <h2>Login</h2>
+        <div class="auth-header">
+            <p class="eyebrow">WELCOME BACK</p>
+            <h1>Log in to RunLog</h1>
+            <p>Keep your running history in one place.</p>
+        </div>
 
-    <form method="post">
-        {% csrf_token %}
+        <form method="post" class="auth-form" novalidate>
+            {% csrf_token %}
 
-        {{ form.as_p }}
+            {% if form.non_field_errors %}
+                <div class="auth-errors">
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
 
-        <button type="submit">Login</button>
-    </form>
+            {% for field in form %}
+                <div class="form-field">
+                    {{ field.label_tag }}
+                    {{ field }}
 
-    <p>
-        Don't have an account?
-        <a href="{% url 'register' %}">Register</a>
-    </p>
+                    {% for error in field.errors %}
+                        <p class="form-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
 
+            <button type="submit">
+                Login
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p>
+                Don't have an account?
+                <a href="{% url 'register' %}">Create one</a>
+            </p>
+        </div>
+
+    </div>
+</section>
 {% endblock %}
